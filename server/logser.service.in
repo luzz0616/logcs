@@ -1,0 +1,36 @@
+[Unit]
+Description=Log Server
+After=network.target
+
+[Service]
+# 使用forking类型，如何服务以守护进程方式运行
+Type=forking
+PIDFile=/var/run/logser.pid # 指定PID文件位置
+
+# 可执行文件路径
+ExecStart=/usr/local/bin/logser --daemon
+
+# 停止服务时发送SIGTERM信号
+ExecStop=/bin/kill -s TERM $MAINPID
+
+# 重启配置
+Restart=always
+RestartSec=5
+RestartPreventExitStatus=SIGKILL
+
+# 用户和权限
+User=root
+Group=root
+
+# 文件描述符限制
+LimitNOFILE=65536
+
+# 创建并使用系统临时目录
+RuntimeDirectory=logser
+RuntimeDirectoryMode=0755
+
+# 环境变量配置
+EnvironmentFile=-/etc/default/logser
+
+[Install]
+WantedBy=multi-user.target
